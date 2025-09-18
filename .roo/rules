@@ -1,0 +1,20 @@
+# Project-Specific Rules for TradingAgents
+
+## Environment Rules
+1. **ALWAYS** activate the conda environment `tradingagents` before running any Python commands
+   - Use: `conda activate tradingagents && python ...`
+   - This applies to ALL Python executions in this project
+
+## Configuration Rules
+2. Use only Google Gemini models (no OpenAI)
+   - LLM Provider: google
+   - Models: gemini-2.0-flash-exp
+
+## API Key Rules
+3. Check for API keys in .env file
+   - Required: GOOGLE_API_KEY, FINNHUB_API_KEY
+   - Keys are loaded via dotenv in default_config.py
+
+## Testing Rules
+4. Always test changes in the conda environment
+5. Verify imports and dependencies are available in the environment
