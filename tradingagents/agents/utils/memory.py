@@ -1,25 +1,71 @@
 import chromadb
 from chromadb.config import Settings
-from openai import OpenAI
+import hashlib
+import numpy as np
 
 
 class FinancialSituationMemory:
     def __init__(self, name, config):
+        self.config = config
+        self.use_embeddings = False
+        
+        # Only use embeddings if OpenAI or local Ollama backend
         if config["backend_url"] == "http://localhost:11434/v1":
-            self.embedding = "nomic-embed-text"
+            try:
+                from openai import OpenAI
+                self.embedding = "nomic-embed-text"
+                self.client = OpenAI(base_url=config["backend_url"])
+                self.use_embeddings = True
+            except:
+                self.use_embeddings = False
+        elif config["backend_url"] == "https://api.openai.com/v1":
+            try:
+                from openai import OpenAI
+                self.embedding = "text-embedding-3-small"
+                self.client = OpenAI(base_url=config["backend_url"])
+                self.use_embeddings = True
+            except:
+                self.use_embeddings = False
         else:
-            self.embedding = "text-embedding-3-small"
-        self.client = OpenAI(base_url=config["backend_url"])
+            # For Google/Gemini and other backends, use simple hash-based embeddings
+            self.use_embeddings = False
+            
         self.chroma_client = chromadb.Client(Settings(allow_reset=True))
         self.situation_collection = self.chroma_client.create_collection(name=name)
 
     def get_embedding(self, text):
-        """Get OpenAI embedding for a text"""
+        """Get embedding for a text - uses OpenAI if available, else simple hash"""
+        if self.use_embeddings:
+            try:
+                response = self.client.embeddings.create(
+                    model=self.embedding, input=text
+                )
+                return response.data[0].embedding
+            except Exception as e:
+                # Fallback to hash-based embedding if API fails
+                return self._get_hash_embedding(text)
+        else:
+            return self._get_hash_embedding(text)
+    
+    def _get_hash_embedding(self, text):
+        """Create a simple deterministic embedding from text using hashing"""
+        # Create a 384-dimensional embedding (smaller than typical 1536)
+        # This is a simple fallback when real embeddings aren't available
+        text_hash = hashlib.sha256(text.encode()).hexdigest()
         
-        response = self.client.embeddings.create(
-            model=self.embedding, input=text
-        )
-        return response.data[0].embedding
+        # Convert hash to numbers
+        embedding = []
+        for i in range(0, min(len(text_hash), 384*2), 2):
+            # Convert hex pairs to float values between -1 and 1
+            hex_val = int(text_hash[i:i+2], 16)
+            normalized = (hex_val / 128.0) - 1.0
+            embedding.append(normalized)
+        
+        # Pad to 384 dimensions if needed
+        while len(embedding) < 384:
+            embedding.append(0.0)
+            
+        return embedding[:384]
 
     def add_situations(self, situations_and_advice):
         """Add financial situations and their corresponding advice. Parameter is a list of tuples (situation, rec)"""
