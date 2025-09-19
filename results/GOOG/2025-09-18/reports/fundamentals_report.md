@@ -1,1 +1,0 @@
-I am unable to retrieve fundamental information for GOOG or GOOGL using the available tools, as both attempts resulted in a "NotFoundError". Therefore, I cannot generate the comprehensive report you requested.

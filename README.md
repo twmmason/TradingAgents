@@ -101,15 +101,41 @@ git clone https://github.com/TauricResearch/TradingAgents.git
 cd TradingAgents
 ```
 
-Create a virtual environment in any of your favorite environment managers:
+### Quick Setup
+
+We provide convenient setup scripts that automatically create the virtual environment, install dependencies, and check your API keys:
+
+**For Unix/MacOS:**
 ```bash
-conda create -n tradingagents python=3.13
-conda activate tradingagents
+source activate.sh
 ```
 
-Install dependencies:
+**For Windows:**
 ```bash
+activate.bat
+```
+
+### Manual Setup
+
+If you prefer to set up manually:
+
+**For Unix/MacOS:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
+```
+
+**For Windows:**
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**Note:** To deactivate the virtual environment when you're done, simply run:
+```bash
+deactivate
 ```
 
 ### Required APIs
@@ -119,9 +145,15 @@ You will also need the FinnHub API for financial data. All of our code is implem
 export FINNHUB_API_KEY=$YOUR_FINNHUB_API_KEY
 ```
 
-You will need the OpenAI API for all the agents.
+You will need the Google API for all the agents (using Google Gemini models).
 ```bash
-export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
+export GOOGLE_API_KEY=$YOUR_GOOGLE_API_KEY
+```
+
+Alternatively, you can create a `.env` file in the project root:
+```bash
+FINNHUB_API_KEY=your_finnhub_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
 ```
 
 ### CLI Usage
@@ -150,7 +182,7 @@ An interface will appear showing results as they load, letting you track the age
 
 ### Implementation Details
 
-We built TradingAgents with LangGraph to ensure flexibility and modularity. We utilize `o1-preview` and `gpt-4o` as our deep thinking and fast thinking LLMs for our experiments. However, for testing purposes, we recommend you use `o4-mini` and `gpt-4.1-mini` to save on costs as our framework makes **lots of** API calls.
+We built TradingAgents with LangGraph to ensure flexibility and modularity. We utilize Google's `gemini-2.0-flash-exp` as our primary LLM for both deep and quick thinking operations. The framework supports Google Search grounding for enhanced real-time data access and accuracy.
 
 ### Python Usage
 
@@ -175,8 +207,9 @@ from tradingagents.default_config import DEFAULT_CONFIG
 
 # Create a custom config
 config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "gpt-4.1-nano"  # Use a different model
-config["quick_think_llm"] = "gpt-4.1-nano"  # Use a different model
+config["llm_provider"] = "google"  # Use Google Gemini
+config["deep_think_llm"] = "gemini-2.0-flash-exp"  # Google's latest model
+config["quick_think_llm"] = "gemini-2.0-flash-exp"  # Google's latest model
 config["max_debate_rounds"] = 1  # Increase debate rounds
 config["online_tools"] = True # Use online tools or cached data
 

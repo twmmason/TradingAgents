@@ -8,6 +8,7 @@ def create_bear_researcher(llm, memory):
         investment_debate_state = state["investment_debate_state"]
         history = investment_debate_state.get("history", "")
         bear_history = investment_debate_state.get("bear_history", "")
+        ticker = state["company_of_interest"]
 
         current_response = investment_debate_state.get("current_response", "")
         market_research_report = state["market_report"]
@@ -29,26 +30,31 @@ def create_bear_researcher(llm, memory):
             print(f"Warning: Could not retrieve past memories: {str(e)}")
             past_memory_str = "No past memories available."
 
-        prompt = f"""You are a Bear Analyst making the case against investing in the stock. Your goal is to present a well-reasoned argument emphasizing risks, challenges, and negative indicators. Leverage the provided research and data to highlight potential downsides and counter bullish arguments effectively.
+        prompt = f"""You are a Bear Analyst making the case against investing in the stock {ticker}. Your goal is to present a well-reasoned argument against investing in {ticker}, emphasizing risks, challenges, and negative indicators. Leverage the provided research and data to highlight potential downsides and counter bullish arguments effectively.
 
-Key points to focus on:
+IMPORTANT: You are specifically analyzing {ticker} - focus your entire analysis on this company only. Do not discuss other companies or create fictional companies.
 
-- Risks and Challenges: Highlight factors like market saturation, financial instability, or macroeconomic threats that could hinder the stock's performance.
-- Competitive Weaknesses: Emphasize vulnerabilities such as weaker market positioning, declining innovation, or threats from competitors.
-- Negative Indicators: Use evidence from financial data, market trends, or recent adverse news to support your position.
-- Bull Counterpoints: Critically analyze the bull argument with specific data and sound reasoning, exposing weaknesses or over-optimistic assumptions.
-- Engagement: Present your argument in a conversational style, directly engaging with the bull analyst's points and debating effectively rather than simply listing facts.
+Key points to focus on for {ticker}:
+
+- Risks and Challenges: Highlight factors like market saturation, financial instability, or macroeconomic threats that could hinder {ticker}'s performance.
+- Competitive Weaknesses: Emphasize vulnerabilities such as weaker market positioning, declining innovation, or threats from competitors specific to {ticker}.
+- Negative Indicators: Use evidence from {ticker}'s financial data, market trends, or recent adverse news to support your position.
+- Bull Counterpoints: Critically analyze the bull argument about {ticker} with specific data and sound reasoning, exposing weaknesses or over-optimistic assumptions.
+- Engagement: Present your argument in a conversational style, directly engaging with the bull analyst's points about {ticker} and debating effectively rather than simply listing facts.
+
+Company being analyzed: {ticker}
 
 Resources available:
 
-Market research report: {market_research_report}
-Social media sentiment report: {sentiment_report}
+Market research report for {ticker}: {market_research_report}
+Social media sentiment report for {ticker}: {sentiment_report}
 Latest world affairs news: {news_report}
-Company fundamentals report: {fundamentals_report}
+Company fundamentals report for {ticker}: {fundamentals_report}
 Conversation history of the debate: {history}
 Last bull argument: {current_response}
 Reflections from similar situations and lessons learned: {past_memory_str}
-Use this information to deliver a compelling bear argument, refute the bull's claims, and engage in a dynamic debate that demonstrates the risks and weaknesses of investing in the stock. You must also address reflections and learn from lessons and mistakes you made in the past.
+
+Use this information to deliver a compelling bear argument against {ticker}, refute the bull's claims about {ticker}, and engage in a dynamic debate that demonstrates the risks and weaknesses of investing in {ticker}. You must also address reflections and learn from lessons and mistakes you made in the past.
 """
 
         response = llm.invoke(prompt)

@@ -463,18 +463,14 @@ def get_user_selections():
     )
     selected_research_depth = select_research_depth()
 
-    # Step 5: OpenAI backend
-    console.print(
-        create_question_box(
-            "Step 5: OpenAI backend", "Select which service to talk to"
-        )
-    )
-    selected_llm_provider, backend_url = select_llm_provider()
+    # Step 5: Thinking agents (Google Gemini)
+    # Hardcode to use Google Gemini
+    selected_llm_provider = "google"
+    backend_url = "https://generativelanguage.googleapis.com/v1"
     
-    # Step 6: Thinking agents
     console.print(
         create_question_box(
-            "Step 6: Thinking Agents", "Select your thinking agents for analysis"
+            "Step 5: Thinking Agents", "Select your Google Gemini models for analysis"
         )
     )
     selected_shallow_thinker = select_shallow_thinking_agent(selected_llm_provider)

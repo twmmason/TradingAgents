@@ -9,7 +9,7 @@ import functools
 import pandas as pd
 import os
 from dateutil.relativedelta import relativedelta
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 import tradingagents.dataflows.interface as interface
 from tradingagents.default_config import DEFAULT_CONFIG
 from langchain_core.messages import HumanMessage
@@ -360,60 +360,3 @@ class Toolkit:
         google_news_results = interface.get_google_news(query, curr_date, 7)
 
         return google_news_results
-
-    @staticmethod
-    @tool
-    def get_stock_news_openai(
-        ticker: Annotated[str, "the company's ticker"],
-        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
-    ):
-        """
-        Retrieve the latest news about a given stock by using OpenAI's news API.
-        Args:
-            ticker (str): Ticker of a company. e.g. AAPL, TSM
-            curr_date (str): Current date in yyyy-mm-dd format
-        Returns:
-            str: A formatted string containing the latest news about the company on the given date.
-        """
-
-        openai_news_results = interface.get_stock_news_openai(ticker, curr_date)
-
-        return openai_news_results
-
-    @staticmethod
-    @tool
-    def get_global_news_openai(
-        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
-    ):
-        """
-        Retrieve the latest macroeconomics news on a given date using OpenAI's macroeconomics news API.
-        Args:
-            curr_date (str): Current date in yyyy-mm-dd format
-        Returns:
-            str: A formatted string containing the latest macroeconomic news on the given date.
-        """
-
-        openai_news_results = interface.get_global_news_openai(curr_date)
-
-        return openai_news_results
-
-    @staticmethod
-    @tool
-    def get_fundamentals_openai(
-        ticker: Annotated[str, "the company's ticker"],
-        curr_date: Annotated[str, "Current date in yyyy-mm-dd format"],
-    ):
-        """
-        Retrieve the latest fundamental information about a given stock on a given date by using OpenAI's news API.
-        Args:
-            ticker (str): Ticker of a company. e.g. AAPL, TSM
-            curr_date (str): Current date in yyyy-mm-dd format
-        Returns:
-            str: A formatted string containing the latest fundamental information about the company on the given date.
-        """
-
-        openai_fundamentals_results = interface.get_fundamentals_openai(
-            ticker, curr_date
-        )
-
-        return openai_fundamentals_results

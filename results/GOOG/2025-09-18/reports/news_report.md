@@ -1,1 +1,0 @@
-I am unable to provide a comprehensive report on the current state of the world relevant for trading and macroeconomics. The `get_global_news_openai` tool returned an error (404 Not Found), and the `get_google_news` tool did not return any results for "macroeconomic news" over the past week. Therefore, I lack the necessary data to analyze recent news and trends.
